@@ -71,7 +71,7 @@ bank-api/
 ### 1. Клонирование репозитория
 
 ```bash
-git clone <url-репозитория>
+git clone github.com/ingenjor/bank-api
 cd bank-api
 2. Настройка переменных окружения
 Скопируйте .env.example в .env и заполните значения. Обязательные переменные:
