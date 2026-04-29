@@ -1,0 +1,32 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bank-api
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# Environment
+.env
+keys/
+
+# OS files
+.DS_Store
+Thumbs.db
