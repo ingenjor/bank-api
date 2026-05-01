@@ -8,12 +8,19 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// Типизированный ключ контекста (рекомендация Go)
+type contextKey string
+
+const UserIDKey contextKey = "userID"
+
 func AuthMiddleware(secret string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			header := r.Header.Get("Authorization")
 			if header == "" {
-				http.Error(w, `{"error":"missing token"}`, http.StatusUnauthorized)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte(`{"error":"missing token"}`))
 				return
 			}
 			tokenStr := strings.TrimPrefix(header, "Bearer ")
@@ -22,10 +29,13 @@ func AuthMiddleware(secret string) func(http.Handler) http.Handler {
 				return []byte(secret), nil
 			})
 			if err != nil || !token.Valid {
-				http.Error(w, `{"error":"invalid token"}`, http.StatusUnauthorized)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte(`{"error":"invalid token"}`))
 				return
 			}
-			ctx := context.WithValue(r.Context(), "userID", claims.Subject)
+			// Используем типизированный ключ
+			ctx := context.WithValue(r.Context(), UserIDKey, claims.Subject)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

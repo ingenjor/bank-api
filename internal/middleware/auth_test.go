@@ -24,7 +24,7 @@ func generateTestToken(userID string, secret string) string {
 
 func TestAuthMiddleware_Valid(t *testing.T) {
 	handler := middleware.AuthMiddleware("test-secret")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := r.Context().Value("userID").(string)
+		userID := r.Context().Value(middleware.UserIDKey).(string)
 		w.Write([]byte(userID))
 	}))
 
@@ -44,4 +44,5 @@ func TestAuthMiddleware_MissingToken(t *testing.T) {
 	handler.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
+	assert.Contains(t, w.Body.String(), `"error":"missing token"`)
 }

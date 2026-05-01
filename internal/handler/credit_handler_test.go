@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"bank-api/internal/handler"
+	"bank-api/internal/middleware"
 	"bank-api/internal/models"
 )
 
@@ -41,7 +42,7 @@ func TestCreditHandler_Apply(t *testing.T) {
 	r.HandleFunc("/credits", h.Apply).Methods("POST")
 	body, _ := json.Marshal(map[string]interface{}{"amount": 100000, "term_months": 12})
 	req := httptest.NewRequest("POST", "/credits", bytes.NewReader(body))
-	req = req.WithContext(context.WithValue(req.Context(), "userID", "user1"))
+	req = req.WithContext(context.WithValue(req.Context(), middleware.UserIDKey, "user1"))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)

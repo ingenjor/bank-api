@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bank-api/internal/middleware"
+	"bank-api/internal/models"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -9,8 +11,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
-
-	"bank-api/internal/models"
 )
 
 type AccountService interface {
@@ -31,7 +31,7 @@ func NewAccountHandler(s AccountService, l *logrus.Logger) *AccountHandler {
 }
 
 func (h *AccountHandler) Create(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	acc, err := h.svc.Create(r.Context(), userID)
 	if err != nil {
 		respond(w, http.StatusInternalServerError, err.Error())
@@ -41,7 +41,7 @@ func (h *AccountHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AccountHandler) GetAccounts(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	accounts, err := h.svc.GetUserAccounts(r.Context(), userID)
 	if err != nil {
 		respond(w, http.StatusInternalServerError, err.Error())
@@ -51,7 +51,7 @@ func (h *AccountHandler) GetAccounts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AccountHandler) Deposit(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	vars := mux.Vars(r)
 	accountID := vars["id"]
 	var req models.DepositRequest
@@ -72,7 +72,7 @@ func (h *AccountHandler) Deposit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AccountHandler) Withdraw(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	vars := mux.Vars(r)
 	accountID := vars["id"]
 	var req models.WithdrawRequest

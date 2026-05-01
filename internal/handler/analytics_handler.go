@@ -10,6 +10,7 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 
+	"bank-api/internal/middleware"
 	"bank-api/internal/service"
 )
 
@@ -28,7 +29,7 @@ func NewAnalyticsHandler(s AnalyticsService, l *logrus.Logger) *AnalyticsHandler
 }
 
 func (h *AnalyticsHandler) GetAnalytics(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	data, err := h.svc.GetAnalytics(r.Context(), userID)
 	if err != nil {
 		respond(w, http.StatusInternalServerError, err.Error())
@@ -38,7 +39,7 @@ func (h *AnalyticsHandler) GetAnalytics(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *AnalyticsHandler) PredictBalance(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	vars := mux.Vars(r)
 	accountID := vars["accountId"]
 	daysStr := r.URL.Query().Get("days")

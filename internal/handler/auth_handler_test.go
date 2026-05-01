@@ -37,7 +37,6 @@ func TestAuthHandler_Register_Success(t *testing.T) {
 	logger.SetOutput(io.Discard)
 	h := handler.NewAuthHandler(mockSvc, logger)
 
-	// Валидные данные: username длиннее 3, email корректный, пароль длиннее 8
 	mockSvc.On("Register", mock.Anything, models.RegisterRequest{
 		Username: "validuser",
 		Email:    "u@x.com",

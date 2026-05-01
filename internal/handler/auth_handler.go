@@ -1,14 +1,13 @@
 package handler
 
 import (
+	"bank-api/internal/models"
 	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
-
-	"bank-api/internal/models"
 )
 
 type AuthService interface {

@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"bank-api/internal/handler"
+	"bank-api/internal/middleware"
 )
 
 type mockTransactionService struct {
@@ -38,13 +39,9 @@ func TestTransferHandler_Transfer(t *testing.T) {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/transfer", h.Transfer).Methods("POST")
-	body, _ := json.Marshal(map[string]interface{}{
-		"from":   validFrom,
-		"to":     validTo,
-		"amount": 1000.0,
-	})
+	body, _ := json.Marshal(map[string]interface{}{"from": validFrom, "to": validTo, "amount": 1000.0})
 	req := httptest.NewRequest("POST", "/transfer", bytes.NewReader(body))
-	req = req.WithContext(context.WithValue(req.Context(), "userID", "user1"))
+	req = req.WithContext(context.WithValue(req.Context(), middleware.UserIDKey, "user1"))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)

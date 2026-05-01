@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"bank-api/internal/handler"
+	"bank-api/internal/middleware"
 	"bank-api/internal/models"
 )
 
@@ -50,7 +51,7 @@ func TestAccountHandler_Deposit(t *testing.T) {
 	body, _ := json.Marshal(map[string]float64{"amount": 500})
 	req := httptest.NewRequest("POST", "/accounts/acc1/deposit", bytes.NewReader(body))
 	req = mux.SetURLVars(req, map[string]string{"id": "acc1"})
-	ctx := context.WithValue(req.Context(), "userID", "user1")
+	ctx := context.WithValue(req.Context(), middleware.UserIDKey, "user1")
 	req = req.WithContext(ctx)
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()

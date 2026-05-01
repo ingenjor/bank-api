@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bank-api/internal/middleware"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -25,7 +26,7 @@ func NewTransferHandler(s TransactionService, l *logrus.Logger) *TransferHandler
 }
 
 func (h *TransferHandler) Transfer(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	var req struct {
 		From   string  `json:"from"   validate:"required,uuid"`
 		To     string  `json:"to"     validate:"required,uuid"`

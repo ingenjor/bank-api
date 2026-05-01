@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"bank-api/internal/handler"
+	"bank-api/internal/middleware"
 	"bank-api/internal/service"
 )
 
@@ -41,7 +42,7 @@ func TestAnalyticsHandler_PredictBalance(t *testing.T) {
 	r.HandleFunc("/accounts/{accountId}/predict", h.PredictBalance).Methods("GET")
 	req := httptest.NewRequest("GET", "/accounts/acc1/predict?days=90", nil)
 	req = mux.SetURLVars(req, map[string]string{"accountId": "acc1"})
-	req = req.WithContext(context.WithValue(req.Context(), "userID", "user1"))
+	req = req.WithContext(context.WithValue(req.Context(), middleware.UserIDKey, "user1"))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 

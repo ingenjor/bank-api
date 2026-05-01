@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bank-api/internal/middleware"
+	"bank-api/internal/models"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -8,8 +10,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-
-	"bank-api/internal/models"
 )
 
 type CreditService interface {
@@ -28,7 +28,7 @@ func NewCreditHandler(s CreditService, l *logrus.Logger) *CreditHandler {
 }
 
 func (h *CreditHandler) Apply(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	var req models.CreditApplicationRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respond(w, http.StatusBadRequest, "invalid request")
@@ -48,7 +48,7 @@ func (h *CreditHandler) Apply(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CreditHandler) GetSchedule(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	vars := mux.Vars(r)
 	creditID := vars["creditId"]
 	schedule, err := h.svc.GetSchedule(r.Context(), creditID, userID)

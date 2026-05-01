@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"bank-api/internal/handler"
+	"bank-api/internal/middleware"
 	"bank-api/internal/models"
 )
 
@@ -41,7 +42,7 @@ func TestCardHandler_Payment(t *testing.T) {
 	logger := logrus.New()
 	h := handler.NewCardHandler(mockSvc, logger)
 
-	validCardID := "550e8400-e29b-41d4-a716-446655440000" // валидный UUID
+	validCardID := "550e8400-e29b-41d4-a716-446655440000"
 	mockSvc.On("Payment", mock.Anything, "user1", models.PaymentRequest{
 		CardID: validCardID,
 		Amount: 150.0,
@@ -49,12 +50,9 @@ func TestCardHandler_Payment(t *testing.T) {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/cards/payment", h.Payment).Methods("POST")
-	body, _ := json.Marshal(map[string]interface{}{
-		"card_id": validCardID,
-		"amount":  150.0,
-	})
+	body, _ := json.Marshal(map[string]interface{}{"card_id": validCardID, "amount": 150.0})
 	req := httptest.NewRequest("POST", "/cards/payment", bytes.NewReader(body))
-	req = req.WithContext(context.WithValue(req.Context(), "userID", "user1"))
+	req = req.WithContext(context.WithValue(req.Context(), middleware.UserIDKey, "user1"))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)

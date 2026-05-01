@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bank-api/internal/middleware"
+	"bank-api/internal/models"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -8,8 +10,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-
-	"bank-api/internal/models"
 )
 
 type CardService interface {
@@ -30,7 +30,7 @@ func NewCardHandler(s CardService, l *logrus.Logger) *CardHandler {
 }
 
 func (h *CardHandler) Issue(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	var req models.CreateCardRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respond(w, http.StatusBadRequest, "invalid request")
@@ -49,7 +49,7 @@ func (h *CardHandler) Issue(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CardHandler) GetCard(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	vars := mux.Vars(r)
 	cardID := vars["id"]
 	card, err := h.svc.GetByID(r.Context(), cardID, userID)
@@ -61,7 +61,7 @@ func (h *CardHandler) GetCard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CardHandler) GetCards(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	cards, err := h.svc.GetUserCards(r.Context(), userID)
 	if err != nil {
 		respond(w, http.StatusInternalServerError, err.Error())
@@ -71,7 +71,7 @@ func (h *CardHandler) GetCards(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CardHandler) Payment(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID := r.Context().Value(middleware.UserIDKey).(string)
 	var req models.PaymentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respond(w, http.StatusBadRequest, "invalid request")
